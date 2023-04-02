@@ -19,4 +19,6 @@ public interface ArticleService {
     void remove_articleById(String id);
 
     Article getArticleByMetaName(String meta_name);
+
+    boolean isExistById(String id);
 }

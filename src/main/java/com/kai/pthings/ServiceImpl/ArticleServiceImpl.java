@@ -71,4 +71,9 @@ public class ArticleServiceImpl implements ArticleService {
     public Article getArticleByMetaName(String meta_name) {
         return articleRepository.findByMetaName(meta_name);
     }
+
+    @Override
+    public boolean isExistById(String id) {
+        return articleRepository.existsById(id);
+    }
 }

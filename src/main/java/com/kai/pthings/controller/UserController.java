@@ -84,6 +84,23 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
     }
 
+    @DeleteMapping("/remove_article")
+    public ResponseEntity remove_article(@RequestBody Article article){
+            Article data_article = articleService.findById(article.getId());
+            if(data_article != null){
+                if(data_article.getAuthor().getUname().equalsIgnoreCase(SecurityContextHolder.getContext().getAuthentication().getName()))
+                {
+                    articleService.remove_articleById(article.getId());
+                    if (articleService.isExistById(article.getId())){
+                        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Snippets.FAILED);
+                    }
+                    return ResponseEntity.status(HttpStatus.OK).body(String.format(Snippets.DELETED_SUCCESS,"Article"));
+                }
+             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
+            }
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Snippets.DIARY_NOT_FOUND);
+    }
+
     private boolean isUser () {
         User user = userService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         for (Role role : user.getRoles()) {
