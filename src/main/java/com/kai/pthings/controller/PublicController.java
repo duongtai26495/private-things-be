@@ -1,10 +1,7 @@
 package com.kai.pthings.controller;
 
 
-import com.kai.pthings.ServiceImpl.ArticleServiceImpl;
-import com.kai.pthings.ServiceImpl.CategoryServiceImpl;
-import com.kai.pthings.ServiceImpl.RoleServiceImpl;
-import com.kai.pthings.ServiceImpl.TagServiceImpl;
+import com.kai.pthings.ServiceImpl.*;
 import com.kai.pthings.config.AuthenticationService;
 import com.kai.pthings.config.Snippets;
 import com.kai.pthings.entity.Article;
@@ -32,6 +29,8 @@ public class PublicController {
     private final TagServiceImpl tagService;
 
     private final ArticleServiceImpl articleService;
+
+    private final StorageServiceImpl storageService;
     @Autowired
     private RoleServiceImpl roleService;
 
@@ -114,6 +113,16 @@ public class PublicController {
     @GetMapping("categories")
     public ResponseEntity getAllCategories(){
         return ResponseEntity.ok().body(categoryService.getAllDisplayCategory());
+    }
+
+
+    @GetMapping("image/{fileName:.+}")
+    public ResponseEntity<byte[]> readFile (@PathVariable String fileName){
+        return storageService.readFile(fileName);
+    }
+    @GetMapping("image/profile/{fileName:.+}")
+    public ResponseEntity<byte[]> readProfileImage (@PathVariable String fileName){
+        return storageService.readProfileImage(fileName);
     }
 
 

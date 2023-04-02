@@ -14,6 +14,8 @@ public interface ArticleService {
 
     Article update_article(Article article);
 
+    Article findById(String id);
+
     void remove_articleById(String id);
 
     Article getArticleByMetaName(String meta_name);

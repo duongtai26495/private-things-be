@@ -6,4 +6,6 @@ public interface UserService {
     User updateUserByUsername(User user);
 
     User findByUsername(String username);
+
+    User changeProfileImage(User user);
 }

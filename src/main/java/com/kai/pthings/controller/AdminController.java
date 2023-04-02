@@ -40,6 +40,29 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
     }
 
+    @PutMapping("/update_category")
+    public ResponseEntity update_category(@RequestBody Category category){
+        if (isAdmin()){
+            if(categoryService.findById(category.getId()) != null){
+                return ResponseEntity.ok().body(categoryService.update_category(category));
+            }
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Snippets.CATEGORY_EXIST);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
+    }
+
+    @DeleteMapping("/remove_category")
+    public ResponseEntity remove_category(@RequestBody Category category){
+        if (isAdmin()){
+            if (categoryService.findById(category.getId()) != null){
+                categoryService.remove_category(category.getId());
+                return ResponseEntity.ok().body(String.format(Snippets.DELETED_SUCCESS,"category"));
+            }
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Snippets.TAG_EXIST);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
+    }
+
     @PostMapping("/new_tag")
     public ResponseEntity new_tag(@RequestBody Tag tag){
         if (isAdmin()){
