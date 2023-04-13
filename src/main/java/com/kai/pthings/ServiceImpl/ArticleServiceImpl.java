@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,7 +29,13 @@ public class ArticleServiceImpl implements ArticleService {
         article.setCreated_at(Snippets.getCurrentDateTime());
         article.setTitle(article.getTitle().strip());
         article.setLast_edited(Snippets.getCurrentDateTime());
-        article.setMeta_name(Snippets.convertMeta(article.getTitle()));
+        String meta_name = Snippets.convertMeta(article.getTitle());
+        if(articleRepository.findByMetaName(meta_name) != null){
+            article.setMeta_name(meta_name + "-" + UUID.randomUUID());
+        }else{
+            article.setMeta_name(meta_name);
+        }
+
         article.setId(UUID.randomUUID().toString());
         article.setAuthor(userService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
         if (article.getFeatured_image().isEmpty()) article.setFeatured_image("");
@@ -45,7 +52,12 @@ public class ArticleServiceImpl implements ArticleService {
         Article data_article = articleRepository.findById(article.getId()).get();
         if (!article.getTitle().equals(data_article.getTitle())) {
             data_article.setTitle(article.getTitle());
-            data_article.setMeta_name(Snippets.convertMeta(article.getTitle()));
+            String meta_name = Snippets.convertMeta(article.getTitle());
+            if(articleRepository.findByMetaName(meta_name) != null){
+                data_article.setMeta_name(meta_name + "-" + UUID.randomUUID());
+            }else{
+                data_article.setMeta_name(meta_name);
+            }
         };
         if (!article.getContent().equals(data_article.getContent())) data_article.setContent(article.getContent());
         if (!article.getCategory().equals(data_article.getCategory())) data_article.setCategory(article.getCategory());

@@ -27,6 +27,8 @@ public class Category {
 
     private String meta_name;
 
+    private String color;
+
     @OneToMany(targetEntity = Article.class, mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Article> articles;

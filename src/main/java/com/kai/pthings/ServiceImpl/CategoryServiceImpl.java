@@ -48,6 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
             data_cate.setMeta_name(Snippets.convertMeta(category.getName().strip()));
         }
         data_cate.setDisplay(category.isDisplay());
+        if(!category.getColor().equals(data_cate.getColor())) data_cate.setColor(category.getColor());
         return categoryRepository.save(data_cate);
     }
 
