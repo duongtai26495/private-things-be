@@ -4,10 +4,7 @@ package com.kai.pthings.controller;
 import com.kai.pthings.ServiceImpl.*;
 import com.kai.pthings.config.AuthenticationService;
 import com.kai.pthings.config.Snippets;
-import com.kai.pthings.entity.Article;
-import com.kai.pthings.entity.AuthenticateRequest;
-import com.kai.pthings.entity.AuthenticationResponse;
-import com.kai.pthings.entity.RegisterRequest;
+import com.kai.pthings.entity.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +29,8 @@ public class PublicController {
     private final ArticleServiceImpl articleService;
 
     private final StorageServiceImpl storageService;
+
+    private final UserServiceImpl userService;
     @Autowired
     private RoleServiceImpl roleService;
 
@@ -44,7 +44,8 @@ public class PublicController {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
-    @GetMapping("/category={name}")
+    //    Return list articles with this category
+    @GetMapping("/category/{name}")
     public Page<Article> getCategoryByMetaName(@RequestParam(defaultValue = Snippets.LAST_EDITED_DESC) String sort,
                                                @RequestParam(defaultValue = "0") int page,
                                                @RequestParam(defaultValue = "20") int size,
@@ -63,7 +64,8 @@ public class PublicController {
         return categoryService.getAllDisplayArticleByMetaName(pageable, name);
     }
 
-    @GetMapping("/tag={name}")
+//    Return list articles with this tag
+    @GetMapping("/tag/{name}")
     public Page<Article> getArticleByMetaNameTag(@RequestParam(defaultValue = Snippets.LAST_EDITED_DESC) String sort,
                                                @RequestParam(defaultValue = "0") int page,
                                                @RequestParam(defaultValue = "20") int size,
@@ -100,35 +102,46 @@ public class PublicController {
         return articleService.getAllDisplayArticle(pageable);
     }
 
-    @GetMapping("/article={name}")
+
+    @GetMapping("/article/{name}")
     public ResponseEntity getArticleByMetaName(@PathVariable("name") String name){
-        return ResponseEntity.ok().body(articleService.getArticleByMetaName(name));
+        Article article = articleService.getArticleByMetaName(name);
+        if (article != null){
+            return ResponseEntity.ok().body(articleService.getArticleByMetaName(name));
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
     }
 
-    @GetMapping("tags")
+    @GetMapping("/tags")
     public ResponseEntity getAllTag(){
         return ResponseEntity.ok().body(tagService.getAllDisplayTag());
     }
 
-    @GetMapping("categories")
+    @GetMapping("/categories")
     public ResponseEntity getAllCategories(){
         return ResponseEntity.ok().body(categoryService.getAllDisplayCategory());
     }
 
 
-    @GetMapping("image/{fileName:.+}")
+    @GetMapping("/image/{fileName:.+}")
     public ResponseEntity<byte[]> readFile (@PathVariable String fileName){
         return storageService.readFile(fileName);
     }
-    @GetMapping("image/profile/{fileName:.+}")
+
+    @GetMapping("/profile/image/{fileName:.+}")
     public ResponseEntity<byte[]> readProfileImage (@PathVariable String fileName){
         return storageService.readProfileImage(fileName);
     }
 
 
-    @GetMapping("/generate_roles")
-    public String generateRoles(){
-        roleService.generateRole();
-        return "Done !";
+    @GetMapping("/profile/{username}")
+    private ResponseEntity getUserInfor(@PathVariable String username){
+        User user = userService.findByUsername(username);
+        if(user != null){
+            return ResponseEntity.ok().body(user);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 }

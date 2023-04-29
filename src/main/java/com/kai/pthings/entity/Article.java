@@ -22,9 +22,10 @@ public class Article {
     @Column(name = "id")
     private String id;
 
+    @Column(length = 255)
     private String title;
 
-    @Column(length = 2000)
+    @Column(length = 5000)
     private String content;
 
     @Column(updatable = false)

@@ -48,8 +48,7 @@ public class User implements UserDetails {
     @Column(name = "joined_at", updatable = false)
     private String joined_at;
 
-    @Column(name = "day_of_birth")
-    private String DayOfBirth;
+    private String date_of_birth;
 
     @JsonIgnore
     private String upassword;

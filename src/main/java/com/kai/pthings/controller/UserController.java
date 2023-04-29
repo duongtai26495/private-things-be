@@ -20,7 +20,7 @@ import java.text.ParseException;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user/")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -37,15 +37,7 @@ public class UserController {
     @Autowired
     private StorageServiceImpl storageService;
 
-    @PostMapping("/new_article")
-    public ResponseEntity new_article(@RequestBody Article article) throws ParseException {
-        if(isUser()){
-            return ResponseEntity.ok().body(articleService.add_new(article));
-        }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
-    }
-
-    @PostMapping("upload_image")
+    @PostMapping("image/upload")
     public ResponseEntity uploadImageWithUsername(@RequestParam("image") MultipartFile file, @RequestParam(defaultValue = "") String username){
         String filename = "";
         if(!username.equals("")){
@@ -71,44 +63,18 @@ public class UserController {
 
     }
 
-    @PutMapping("/update_article")
-    public ResponseEntity update_article(@RequestBody Article article){
-        if (isUser()){
-            Article data_article = articleService.findById(article.getId());
-            if(data_article != null){
-                return ResponseEntity.ok().body(articleService.update_article(article));
-            }
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Snippets.DIARY_NOT_FOUND);
+    @PutMapping("update/{username}")
+    public ResponseEntity update_userByUsername(@PathVariable String username, @RequestBody User user){
+        if (username.equalsIgnoreCase(SecurityContextHolder.getContext().getAuthentication().getName())){
+            user.setUname(username);
+            return ResponseEntity.ok().body(userService.updateUserByUsername(user));
         }
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
 
-    @DeleteMapping("/remove_article")
-    public ResponseEntity remove_article(@RequestBody Article article){
-            Article data_article = articleService.findById(article.getId());
-            if(data_article != null){
-                if(data_article.getAuthor().getUname().equalsIgnoreCase(SecurityContextHolder.getContext().getAuthentication().getName()))
-                {
-                    articleService.remove_articleById(article.getId());
-                    if (articleService.isExistById(article.getId())){
-                        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Snippets.FAILED);
-                    }
-                    return ResponseEntity.status(HttpStatus.OK).body(String.format(Snippets.DELETED_SUCCESS,"Article"));
-                }
-             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
-            }
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Snippets.DIARY_NOT_FOUND);
-    }
 
-    private boolean isUser () {
-        User user = userService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-        for (Role role : user.getRoles()) {
-            if (role.getName().equalsIgnoreCase(Snippets.ROLE_USER)) {
-                return true;
-            }
-        }
-        return false;
+    @GetMapping("active/{token}")
+    public ResponseEntity active_user(@PathVariable String token){
+        return ResponseEntity.ok().body(token);
     }
-
 }

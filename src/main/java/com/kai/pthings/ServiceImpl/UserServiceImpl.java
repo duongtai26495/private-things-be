@@ -27,6 +27,10 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        if(user.getDate_of_birth() != null && !user.getDate_of_birth().equals(getUser.getDate_of_birth())){
+            getUser.setDate_of_birth(user.getDate_of_birth());
+        }
+
         if(user.getProfile_image() != null && !user.getProfile_image().equals(getUser.getProfile_image())){
             getUser.setProfile_image(user.getProfile_image());
         }

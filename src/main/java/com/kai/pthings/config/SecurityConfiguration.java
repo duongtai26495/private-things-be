@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/public/**")
+                .requestMatchers("/api/public/**","/swagger-ui/**","/swagger-ui/", "/v3/api-docs/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -46,6 +46,8 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
+
 
     @Bean
     CorsConfigurationSource corsConfigurationSource(){

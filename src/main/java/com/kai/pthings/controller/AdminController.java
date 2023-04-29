@@ -28,7 +28,7 @@ public class AdminController {
 
     @Autowired
     private TagServiceImpl tagService;
-    @PostMapping("/new_category")
+    @PostMapping("/category/new")
     public ResponseEntity new_category(@RequestBody Category category){
         if (isAdmin()){
             String meta_name = Snippets.convertMeta(category.getName());
@@ -40,7 +40,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
     }
 
-    @PutMapping("/update_category")
+    @PutMapping("/category/update")
     public ResponseEntity update_category(@RequestBody Category category){
         if (isAdmin()){
             if(categoryService.findById(category.getId()) != null){
@@ -51,11 +51,11 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
     }
 
-    @DeleteMapping("/remove_category")
-    public ResponseEntity remove_category(@RequestBody Category category){
+    @DeleteMapping("/category/remove/{id}")
+    public ResponseEntity remove_category(@PathVariable String id){
         if (isAdmin()){
-            if (categoryService.findById(category.getId()) != null){
-                categoryService.remove_category(category.getId());
+            if (categoryService.findById(id) != null){
+                categoryService.remove_category(id);
                 return ResponseEntity.ok().body(String.format(Snippets.DELETED_SUCCESS,"category"));
             }
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Snippets.TAG_EXIST);
@@ -63,7 +63,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
     }
 
-    @PostMapping("/new_tag")
+    @PostMapping("/tag/new")
     public ResponseEntity new_tag(@RequestBody Tag tag){
         if (isAdmin()){
             String meta_name = Snippets.convertMeta(tag.getName());
@@ -75,7 +75,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
     }
 
-    @PutMapping("/update_tag")
+    @PutMapping("/tag/update/")
     public ResponseEntity update_tag(@RequestBody Tag tag){
         if (isAdmin()){
             if (tagService.isExistById(tag.getId())){
@@ -86,11 +86,11 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Snippets.NOT_PERMISSION);
     }
 
-    @DeleteMapping("/remove_tag")
-    public ResponseEntity remove_tag(@RequestBody Tag tag){
+    @DeleteMapping("/tag/remove/{id}")
+    public ResponseEntity remove_tag(@PathVariable String id){
         if (isAdmin()){
-            if (tagService.isExistById(tag.getId())){
-                tagService.remove_tag(tag.getId());
+            if (tagService.isExistById(id)){
+                tagService.remove_tag(id);
                 return ResponseEntity.ok().body(String.format(Snippets.DELETED_SUCCESS,"tag"));
             }
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Snippets.TAG_EXIST);
